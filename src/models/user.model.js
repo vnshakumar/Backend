@@ -1,7 +1,7 @@
 import mongoose, { MongooseError } from "mongoose";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
+import pkg from "nodemon";
 import  jwt from "jsonwebtoken";
-import { emit } from "nodemon";
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         typ: String,
-        require: true,
+        required: true,
         unique: true,
         lowercase: true,
         trim: true
@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema({
         {
             type: mongoose.Schema.Types.ObjectId,
             required: true,
-            ref: "Video"
+            ref: "Video",
         }
     ],
     password: {
@@ -50,9 +50,9 @@ const userSchema = new mongoose.Schema({
     , { timestamps: true }
 )
 
-UserSchema.pre('save', async function (next) {
+UserSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next(); 
-    this.password=bcrypt.hash(this.password,10);
+    this.password=await bcrypt.hash(this.password,10);
     next();
  });
  UserSchema.methods.checkPassword = async function(inputPassword, userPassword){
@@ -82,4 +82,4 @@ UserSchema.pre('save', async function (next) {
     })
  }
 
-export const User=mongoose.model("User",userSchema);
+export const User=mongoose.model("User",userSchema); 
